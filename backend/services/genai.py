@@ -1,9 +1,13 @@
 from langchain_community.document_loaders import YoutubeLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 import logging 
+from langchain_google_vertexai import VertexAI
+from langchain.chains.summarize import load_summarize_chain
+
 # Configure log
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
 class YoutubeProcessor:
     # Retrieve the full transcript
 
@@ -28,3 +32,19 @@ class YoutubeProcessor:
             logger.info(f"{author} \n {length}\n{title}\n{total_size}")
 
         return result
+
+class GeminiProcessor:
+    def __init__(self, model_name, project) -> None:
+        self.model = VertexAI(model_name=model_name, project=project)
+
+    def generate_document_summary(self, documents: list, **args):
+
+        chain_type = "map_reduce" if len(documents) > 10 else "stuff"
+
+        chain = load_summarize_chain(
+            llm=self.model,
+            chain_type=chain_type,
+            **args
+        )
+
+        return chain.run(documents)
