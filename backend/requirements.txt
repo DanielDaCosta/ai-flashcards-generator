@@ -7,3 +7,4 @@ tiktoken
 streamlit
 fastapi
 uvicorn
+tqdm

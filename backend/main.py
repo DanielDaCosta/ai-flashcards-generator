@@ -18,25 +18,30 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
+genai_processor = GeminiProcessor(
+    model_name="gemini-pro",
+    project="heroic-climber-423918-r1"
+)
+
 @app.post("/analyze_video")
 def analyze_video(request: VideoAnalysisRequest):
     # # Doing the analysis
     # from langchain_community.document_loaders import YoutubeLoader
     # from langchain.text_splitter import RecursiveCharacterTextSplitter
 
-    processor = YoutubeProcessor()
+    processor = YoutubeProcessor(genai_processor=genai_processor)
     result = processor.retrieve_youtube_documents(str(request.youtube_link), verbose=True)
 
-    genai_processor = GeminiProcessor(
-        model_name="gemini-pro",
-        project="heroic-climber-423918-r1"
-    )
 
-    summary = genai_processor.generate_document_summary(
-        result, verbose=True
-    )
+
+    #summary = genai_processor.generate_document_summary(
+    #    result, verbose=True
+    #)
+
+    # Find key concepts
+    key_concepts = processor.find_key_concepts(result, group_size=2)
     return {
-        "summary": summary
+        "key_concepts": key_concepts
     }
 
     # loader = YoutubeLoader.from_youtube_url(str(request.youtube_link), add_video_info=True)
