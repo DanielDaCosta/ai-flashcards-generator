@@ -10,7 +10,7 @@ export GOOGLE_APPLICATION_CREDENTIALS="authentication.json"
 
 ## Backend
 ```
-uvicorn main:app 
+uvicorn main:app
 ```
 
 ## Frontend
